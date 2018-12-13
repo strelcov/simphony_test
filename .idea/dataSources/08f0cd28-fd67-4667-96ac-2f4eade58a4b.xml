@@ -60,8 +60,8 @@
       <Comment>standard public schema</Comment>
       <StateNumber>2</StateNumber>
       <Owner>retailcrm</Owner>
-      <IntrospectionTimestamp>2018-12-13.10:31:14.098</IntrospectionTimestamp>
-      <IntrospectionStateNumber>689</IntrospectionStateNumber>
+      <IntrospectionTimestamp>2018-12-13.16:02:46.699</IntrospectionTimestamp>
+      <IntrospectionStateNumber>698</IntrospectionStateNumber>
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
@@ -98,132 +98,284 @@
       <SchemaName>pg_catalog</SchemaName>
       <SchemaId>11</SchemaId>
     </extension>
-    <sequence id="17" parent="10" name="fos_user_id_seq">
-      <ObjectId>16385</ObjectId>
+    <sequence id="17" parent="10" name="author_id_seq">
+      <ObjectId>16411</ObjectId>
       <Owner>retailcrm</Owner>
-      <StateNumber>684</StateNumber>
+      <StateNumber>698</StateNumber>
       <SequenceIdentity>1</SequenceIdentity>
       <CacheSize>1</CacheSize>
     </sequence>
-    <table id="18" parent="10" name="fos_user">
-      <ObjectId>16387</ObjectId>
+    <sequence id="18" parent="10" name="book_id_seq">
+      <ObjectId>16407</ObjectId>
       <Owner>retailcrm</Owner>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
+      <SequenceIdentity>1</SequenceIdentity>
+      <CacheSize>1</CacheSize>
+    </sequence>
+    <sequence id="19" parent="10" name="fos_user_id_seq">
+      <ObjectId>16409</ObjectId>
+      <Owner>retailcrm</Owner>
+      <StateNumber>698</StateNumber>
+      <SequenceIdentity>1</SequenceIdentity>
+      <CacheSize>1</CacheSize>
+    </sequence>
+    <table id="20" parent="10" name="author">
+      <ObjectId>16438</ObjectId>
+      <Owner>retailcrm</Owner>
+      <StateNumber>698</StateNumber>
     </table>
-    <column id="19" parent="18" name="id">
+    <table id="21" parent="10" name="book">
+      <ObjectId>16413</ObjectId>
+      <Owner>retailcrm</Owner>
+      <StateNumber>698</StateNumber>
+    </table>
+    <table id="22" parent="10" name="fos_user">
+      <ObjectId>16423</ObjectId>
+      <Owner>retailcrm</Owner>
+      <StateNumber>698</StateNumber>
+    </table>
+    <table id="23" parent="10" name="migration_versions">
+      <ObjectId>16402</ObjectId>
+      <Owner>retailcrm</Owner>
+      <StateNumber>697</StateNumber>
+    </table>
+    <column id="24" parent="20" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="20" parent="18" name="username">
+    <column id="25" parent="20" name="name">
+      <Position>2</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="26" parent="20" name="author_pkey">
+      <ObjectId>16441</ObjectId>
+      <StateNumber>698</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="27" parent="20" name="author_pkey">
+      <ObjectId>16442</ObjectId>
+      <StateNumber>698</StateNumber>
+      <ColNames>id</ColNames>
+      <UnderlyingIndexName>author_pkey</UnderlyingIndexName>
+      <Primary>1</Primary>
+    </key>
+    <column id="28" parent="21" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="29" parent="21" name="author_id">
+      <Position>2</Position>
+      <DataType>integer|0s</DataType>
+      <StateNumber>698</StateNumber>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="30" parent="21" name="title">
+      <Position>3</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="31" parent="21" name="screen">
+      <Position>4</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="32" parent="21" name="file">
+      <Position>5</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="33" parent="21" name="read_date">
+      <Position>6</Position>
+      <DataType>timestamp(0)|0s</DataType>
+      <StateNumber>698</StateNumber>
+      <DefaultExpression>NULL::timestamp without time zone</DefaultExpression>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="34" parent="21" name="allow_download">
+      <Position>7</Position>
+      <DataType>boolean|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>16</TypeId>
+    </column>
+    <index id="35" parent="21" name="book_pkey">
+      <ObjectId>16420</ObjectId>
+      <StateNumber>698</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <index id="36" parent="21" name="idx_cbe5a331f675f31b">
+      <ObjectId>16422</ObjectId>
+      <StateNumber>698</StateNumber>
+      <ColNames>author_id</ColNames>
+    </index>
+    <key id="37" parent="21" name="book_pkey">
+      <ObjectId>16421</ObjectId>
+      <StateNumber>698</StateNumber>
+      <ColNames>id</ColNames>
+      <UnderlyingIndexName>book_pkey</UnderlyingIndexName>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="38" parent="21" name="fk_cbe5a331f675f31b">
+      <ObjectId>16443</ObjectId>
+      <StateNumber>698</StateNumber>
+      <ColNames>author_id</ColNames>
+      <RefTableId>16438</RefTableId>
+      <RefColPositions>1</RefColPositions>
+      <RefTableName>author</RefTableName>
+      <RefKeyName>author_pkey</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="39" parent="22" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>698</StateNumber>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="40" parent="22" name="username">
       <Position>2</Position>
       <DataType>varchar(180)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="21" parent="18" name="username_canonical">
+    <column id="41" parent="22" name="username_canonical">
       <Position>3</Position>
       <DataType>varchar(180)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="22" parent="18" name="email">
+    <column id="42" parent="22" name="email">
       <Position>4</Position>
       <DataType>varchar(180)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="23" parent="18" name="email_canonical">
+    <column id="43" parent="22" name="email_canonical">
       <Position>5</Position>
       <DataType>varchar(180)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="24" parent="18" name="enabled">
+    <column id="44" parent="22" name="enabled">
       <Position>6</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>16</TypeId>
     </column>
-    <column id="25" parent="18" name="salt">
+    <column id="45" parent="22" name="salt">
       <Position>7</Position>
       <DataType>varchar(255)|0s</DataType>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <DefaultExpression>NULL::character varying</DefaultExpression>
       <TypeId>1043</TypeId>
     </column>
-    <column id="26" parent="18" name="password">
+    <column id="46" parent="22" name="password">
       <Position>8</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="27" parent="18" name="last_login">
+    <column id="47" parent="22" name="last_login">
       <Position>9</Position>
       <DataType>timestamp(0)|0s</DataType>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <DefaultExpression>NULL::timestamp without time zone</DefaultExpression>
       <TypeId>1114</TypeId>
     </column>
-    <column id="28" parent="18" name="confirmation_token">
+    <column id="48" parent="22" name="confirmation_token">
       <Position>10</Position>
       <DataType>varchar(180)|0s</DataType>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <DefaultExpression>NULL::character varying</DefaultExpression>
       <TypeId>1043</TypeId>
     </column>
-    <column id="29" parent="18" name="password_requested_at">
+    <column id="49" parent="22" name="password_requested_at">
       <Position>11</Position>
       <DataType>timestamp(0)|0s</DataType>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <DefaultExpression>NULL::timestamp without time zone</DefaultExpression>
       <TypeId>1114</TypeId>
     </column>
-    <column id="30" parent="18" name="roles">
+    <column id="50" parent="22" name="roles">
       <Position>12</Position>
       <Comment>(DC2Type:array)</Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>685</StateNumber>
+      <StateNumber>698</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <index id="31" parent="18" name="fos_user_pkey">
-      <ObjectId>16397</ObjectId>
-      <StateNumber>685</StateNumber>
+    <index id="51" parent="22" name="fos_user_pkey">
+      <ObjectId>16433</ObjectId>
+      <StateNumber>698</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="32" parent="18" name="uniq_957a647992fc23a8">
-      <ObjectId>16399</ObjectId>
-      <StateNumber>686</StateNumber>
+    <index id="52" parent="22" name="uniq_957a647992fc23a8">
+      <ObjectId>16435</ObjectId>
+      <StateNumber>698</StateNumber>
       <ColNames>username_canonical</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="33" parent="18" name="uniq_957a6479a0d96fbf">
-      <ObjectId>16400</ObjectId>
-      <StateNumber>687</StateNumber>
+    <index id="53" parent="22" name="uniq_957a6479a0d96fbf">
+      <ObjectId>16436</ObjectId>
+      <StateNumber>698</StateNumber>
       <ColNames>email_canonical</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="34" parent="18" name="uniq_957a6479c05fb297">
-      <ObjectId>16401</ObjectId>
-      <StateNumber>688</StateNumber>
+    <index id="54" parent="22" name="uniq_957a6479c05fb297">
+      <ObjectId>16437</ObjectId>
+      <StateNumber>698</StateNumber>
       <ColNames>confirmation_token</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="35" parent="18" name="fos_user_pkey">
-      <ObjectId>16398</ObjectId>
-      <StateNumber>685</StateNumber>
+    <key id="55" parent="22" name="fos_user_pkey">
+      <ObjectId>16434</ObjectId>
+      <StateNumber>698</StateNumber>
       <ColNames>id</ColNames>
       <UnderlyingIndexName>fos_user_pkey</UnderlyingIndexName>
+      <Primary>1</Primary>
+    </key>
+    <column id="56" parent="23" name="version">
+      <Position>1</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>697</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="57" parent="23" name="migration_versions_pkey">
+      <ObjectId>16405</ObjectId>
+      <StateNumber>697</StateNumber>
+      <ColNames>version</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="58" parent="23" name="migration_versions_pkey">
+      <ObjectId>16406</ObjectId>
+      <StateNumber>697</StateNumber>
+      <ColNames>version</ColNames>
+      <UnderlyingIndexName>migration_versions_pkey</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
   </database-model>
