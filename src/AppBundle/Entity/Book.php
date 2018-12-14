@@ -34,7 +34,7 @@ class Book
     /**
      * @ORM\Column(type="string")
      */
-    private $file = '';
+    private $filePath = '';
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -42,11 +42,111 @@ class Book
     /**
      * @ORM\Column(type="boolean")
      */
-    private $allowDownload = 0;
+    private $allowDownload = false;
 
-    public function __construct()
+    /**
+     * @return mixed
+     */
+    public function getId()
     {
-        $this->readDate = new \DateTime();
+        return $this->id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getScreen()
+    {
+        return $this->screen;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllowDownload()
+    {
+        return $this->allowDownload;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReadDate()
+    {
+        return $this->readDate;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @param mixed $screen
+     */
+    public function setScreen($screen)
+    {
+        $this->screen = $screen;
+    }
+
+    /**
+     * @param mixed $filePath
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
+    }
+
+    /**
+     * @param mixed $readDate
+     */
+    public function setReadDate($readDate)
+    {
+        $this->readDate = $readDate;
+    }
+
+    /**
+     * @param mixed $allowDownload
+     */
+    public function setAllowDownload($allowDownload)
+    {
+        $this->allowDownload = $allowDownload;
+    }
+
+    /**
+     * @param mixed $author
+     */
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+    }
+
 
 }
