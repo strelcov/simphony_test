@@ -1,44 +1,41 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Books list</h1>
+    <h1>Список книг</h1>
 
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Title</th>
-                <th>Screen</th>
-                <th>Filepath</th>
-                <th>Readdate</th>
-                <th>Allowdownload</th>
-                <th>Actions</th>
+                <th>Название</th>
+                <th>Обложка</th>
+                <th>Дата прочтения</th>
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    <th class="text-right">Действия</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
         {% for book in books %}
             <tr>
-                <td><a href="{{ path('book_edit', { 'id': book.id }) }}">{{ book.id }}</a></td>
-                <td>{{ book.title }}</td>
+                <td>{{ book.id }}</td>
+                <td><a href="{{ path('book_edit', { 'id': book.id }) }}">{{ book.title }}</a></td>
                 <td>{{ book.screen }}</td>
-                <td>{{ book.filePath }}</td>
-                <td>{% if book.readDate %}{{ book.readDate|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{% if book.allowDownload %}Yes{% else %}No{% endif %}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('book_edit', { 'id': book.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
+                <td>{% if book.readDate %}{{ book.readDate|date('d.m.Y H:i:s') }}{% endif %}</td>
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    <td class="text-right">
+                        {% if book.allowDownload %}
+                            <a href="{{ path('book_delete', { 'id': book.id }) }}">Скачать</a>
+                        {% endif %}
+                        <a href="{{ path('book_edit', { 'id': book.id }) }}">Изменить</a>
+                        <a href="{{ path('book_delete', { 'id': book.id }) }}">Удалить</a>
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('book_new') }}">Create a new book</a>
-        </li>
-    </ul>
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+        <a class="btn btn-primary" href="{{ path('book_new') }}">Добавить книгу</a>
+    {% endif %}
 {% endblock %}

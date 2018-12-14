@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Book;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 class BookController extends Controller
@@ -96,7 +96,7 @@ class BookController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('book_index');
+        return $this->redirectToRoute('homepage');
     }
 
     /**
