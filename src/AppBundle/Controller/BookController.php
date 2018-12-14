@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Book;
+use AppBundle\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,7 +34,7 @@ class BookController extends Controller
      * @Route("/book/new", name="book_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, FileUploader $fileUploader)
     {
         $book = new Book();
         $form = $this->createForm('AppBundle\Form\BookType', $book);
@@ -42,6 +43,9 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($book);
+
+            $this->saveFiles($book, $fileUploader);
+
             $em->flush();
 
             return $this->redirectToRoute('homepage');
@@ -53,6 +57,23 @@ class BookController extends Controller
         ));
     }
 
+    private function saveFiles(Book $book, FileUploader $fileUploader)
+    {
+        if (!empty($book->getScreen())) {
+            $screenName = $fileUploader->upload($book->getScreen(), $book->getId());
+            $book->setScreen($screenName);
+        } else {
+            //TODO: не получилось сделать по умолчанию пустую строку, в бд хочет записаться null
+            $book->setScreen('');
+        }
+        if (!empty($book->getFilePath())) {
+            $fileName = $fileUploader->upload($book->getFilePath(), $book->getId());
+            $book->setFilePath($fileName);
+        } else {
+            //TODO: не получилось сделать по умолчанию пустую строку, в бд хочет записаться null
+            $book->setFilePath('');
+        }
+    }
 
     /**
      * Displays a form to edit an existing book entity.
@@ -82,7 +103,7 @@ class BookController extends Controller
     /**
      * Deletes a book entity.
      *
-     * @Route("/book/{id}", name="book_delete")
+     * @Route("/book/{id}/delete", name="book_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Book $book)
@@ -104,7 +125,7 @@ class BookController extends Controller
      *
      * @param Book $book The book entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return \Symfony\Component\Form\FormInterface
      */
     private function createDeleteForm(Book $book)
     {

@@ -1,21 +1,14 @@
 {% extends 'base.html.twig' %}
 
+{% form_theme edit_form 'bootstrap_4_layout.html.twig' %}
+
 {% block body %}
-    <h1>Book edit</h1>
+    <h1>Редактирование книги</h1>
 
     {{ form_start(edit_form) }}
         {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
+        <input type="submit" class="btn btn-primary" value="Сохранить" />
     {{ form_end(edit_form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('homepage') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <a class="btn btn-secondary" href="{{ path('homepage') }}">К списку книг</a>
 {% endblock %}

@@ -28,21 +28,30 @@ class Book
      */
     private $author;
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", options={"default":""})
      */
     private $screen = '';
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", options={"default":""})
      */
     private $filePath = '';
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true, options={"default":NULL})
      */
     private $readDate = null;
     /**
      * @ORM\Column(type="boolean")
      */
     private $allowDownload = false;
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
 
     /**
      * @return mixed
@@ -146,6 +155,14 @@ class Book
     public function setAuthor($author)
     {
         $this->author = $author;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 
 
