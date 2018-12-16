@@ -6,6 +6,7 @@ use AppBundle\Entity\Book;
 use AppBundle\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -83,7 +84,6 @@ class BookController extends Controller
      */
     public function editAction(Request $request, Book $book)
     {
-        $deleteForm = $this->createDeleteForm($book);
         $editForm = $this->createForm('AppBundle\Form\BookType', $book);
         $editForm->handleRequest($request);
 
@@ -96,7 +96,6 @@ class BookController extends Controller
         return $this->render('book/edit.html.twig', array(
             'book' => $book,
             'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
         ));
     }
 
@@ -104,35 +103,17 @@ class BookController extends Controller
      * Deletes a book entity.
      *
      * @Route("/book/{id}/delete", name="book_delete")
-     * @Method("DELETE")
+     * @Method("GET")
      */
-    public function deleteAction(Request $request, Book $book)
+    public function deleteAction(Book $book)
     {
-        $form = $this->createDeleteForm($book);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($book);
-            $em->flush();
+        if(!$book) {
+            throw new NotFoundHttpException('Книга не найдена');
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($book);
+        $em->flush();
 
         return $this->redirectToRoute('homepage');
-    }
-
-    /**
-     * Creates a form to delete a book entity.
-     *
-     * @param Book $book The book entity
-     *
-     * @return \Symfony\Component\Form\FormInterface
-     */
-    private function createDeleteForm(Book $book)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('book_delete', array('id' => $book->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
     }
 }
