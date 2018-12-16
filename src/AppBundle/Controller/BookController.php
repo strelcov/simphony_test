@@ -61,14 +61,22 @@ class BookController extends Controller
     private function saveFiles(Book $book, FileUploader $fileUploader)
     {
         if (!empty($book->getScreen())) {
-            $screenName = $fileUploader->upload($book->getScreen(), $book->getId());
+            $screenName = $fileUploader->upload(
+                $book->getScreen(),
+                $book->getId(),
+                $book->getCreatedAt()->format('Y-m')
+            );
             $book->setScreen($screenName);
         } else {
             //TODO: не получилось сделать по умолчанию пустую строку, в бд хочет записаться null
             $book->setScreen('');
         }
         if (!empty($book->getFilePath())) {
-            $fileName = $fileUploader->upload($book->getFilePath(), $book->getId());
+            $fileName = $fileUploader->upload(
+                $book->getFilePath(),
+                $book->getId(),
+                $book->getCreatedAt()->format('Y-m')
+            );
             $book->setFilePath($fileName);
         } else {
             //TODO: не получилось сделать по умолчанию пустую строку, в бд хочет записаться null
@@ -115,5 +123,26 @@ class BookController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('homepage');
+    }
+    /**
+     * Download a book.
+     *
+     * @Route("/book/{id}/download", name="book_download")
+     * @Method("GET")
+     */
+    public function downloadAction(Book $book)
+    {
+        if(!$book) {
+            throw new NotFoundHttpException('Книга не найдена');
+        }
+        if(empty($book->getFilePath())) {
+            throw new NotFoundHttpException('Книга не была загружена');
+        }
+        if(!$book->getAllowDownload()) {
+            throw new NotFoundHttpException('Скачивание запрещено');
+        }
+        $path = $this->getParameter('books_directory') . '/' . $book->getFilePath();
+
+        return $this->file($path);
     }
 }

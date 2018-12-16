@@ -4,10 +4,10 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Author;
 use AppBundle\Entity\Book;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,18 +34,23 @@ class BookType extends AbstractType
                 'data_class' => null,
                 'required' => false,
             ])
-            ->add('readDate', DateTimeType::class, ['label' => 'Дата прочтения'])
+            ->add('readDate', DateType::class, [
+                'label' => 'Дата прочтения',
+                'widget' => 'single_text',
+                'html5' => true,
+                'required' => 'required',
+            ])
             ->add('allowDownload', CheckboxType::class, [
                 'label' => 'Разрешить скачивание',
                 'required' => false,
             ])
-            ->add('author');
-            /*->add('author', CollectionType::class, [
-                'entry_type' => Author::class,
-                'allow_add' => true,
+            //->add('author');
+            ->add('author', EntityType::class, [
+                'class' => Author::class,
+                'label' => 'Автор',
                 'choice_label' => 'name',
-                'by_reference' => true,
-            ]);*/
+                'required' => 'required',
+            ]);
     }
 
     /**

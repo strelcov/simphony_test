@@ -1,7 +1,8 @@
 # Learn more about services, parameters and containers at
 # https://symfony.com/doc/current/service_container.html
 parameters:
-    books_directory: '%kernel.project_dir%/web/books'
+    books_public_directory: '/books'
+    books_directory: '%kernel.project_dir%/web%books_public_directory%'
 
 services:
     # default configuration for services in *this* file
@@ -33,12 +34,17 @@ services:
         arguments:
             $targetDir: '%books_directory%'
 
-    AppBundle\EventListener\BookUploadListener:
+    AppBundle\EventListener\BookRemoveListener:
         tags:
-            - { name: doctrine.event_listener, event: preUpdate }
-            #- { name: doctrine.event_listener, event: preRemove }
-            #- { name: doctrine.event_listener, event: preUpdate }
-            #- { name: doctrine.event_listener, event: postLoad }
+            - { name: doctrine.event_listener, event: preRemove }
+
+    app.twig_extension:
+        arguments:
+            $path: '%books_public_directory%'
+        class: AppBundle\Twig\AppExtension
+        public: false
+        tags:
+            - { name: twig.extension }
 
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:

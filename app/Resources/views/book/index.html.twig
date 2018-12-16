@@ -22,12 +22,14 @@
                 <td>{{ book.id }}</td>
                 <td><a href="{{ path('book_edit', { 'id': book.id }) }}">{{ book.title }}</a></td>
                 <td>{{ book.author }}</td>
-                <td>{{ book.screen }}</td>
+                <td>
+                    {{ book.screen|resize_image('100px', '100px' ) }}
+                </td>
                 <td>{% if book.readDate %}{{ book.readDate|date('d.m.Y H:i:s') }}{% endif %}</td>
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                     <td class="text-right">
-                        {% if book.allowDownload %}
-                            <a href="{{ path('book_delete', { 'id': book.id }) }}">Скачать</a>
+                        {% if book.allowDownload and book.filePath != '' %}
+                            <a href="{{ path('book_download', { 'id': book.id }) }}">Скачать</a>
                         {% endif %}
                         <a href="{{ path('book_edit', { 'id': book.id }) }}">Изменить</a>
                         <a href="{{ path('book_delete', { 'id': book.id }) }}">Удалить</a>

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -20,23 +21,37 @@ class Book
     private $id;
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @Assert\Length(max=255)
      */
     private $title;
     /**
      * @ORM\ManyToOne(targetEntity="Author")
      * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
+     * @Assert\NotBlank
      */
     private $author;
     /**
      * @ORM\Column(type="string", options={"default":""})
+     * @Assert\Image(
+     *     maxSize = "5M",
+     *     maxSizeMessage = "Максимальный размер файла 5MB.",
+     *     mimeTypes = {"image/png", "image/jpg", "image/jpeg"},
+     *     mimeTypesMessage = "Необъодимо загрузить изображение"
+     * )
      */
     private $screen = '';
     /**
      * @ORM\Column(type="string", options={"default":""})
+     * @Assert\File(
+     *     maxSize = "5M",
+     *     maxSizeMessage = "Максимальный размер файла 5MB.",
+     * )
      */
     private $filePath = '';
     /**
-     * @ORM\Column(type="datetime", nullable=true, options={"default":NULL})
+     * @ORM\Column(type="date", nullable=true, options={"default":NULL})
+     * @Assert\Date
      */
     private $readDate = null;
     /**

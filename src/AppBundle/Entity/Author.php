@@ -31,4 +31,12 @@ class Author
     public function __toString() {
         return $this->name;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 }
