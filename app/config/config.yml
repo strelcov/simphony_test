@@ -31,6 +31,9 @@ framework:
     assets: ~
     php_errors:
         log: true
+    cache:
+        app: cache.adapter.redis
+        default_redis_provider: "redis://%redis.host%:%redis.port%"
 
 # Twig Configuration
 twig:
@@ -59,6 +62,12 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+
+        result_cache_driver:
+            type: redis
+            host: '%redis.host%'
+            port: '%redis.port%'
+            instance_class: Redis
 
 # Swiftmailer Configuration
 swiftmailer:

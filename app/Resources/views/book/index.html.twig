@@ -21,9 +21,9 @@
             <tr>
                 <td>{{ book.id }}</td>
                 <td><a href="{{ path('book_edit', { 'id': book.id }) }}">{{ book.title }}</a></td>
-                <td>{{ book.author }}</td>
+                <td>{{ book.author.name }}</td>
                 <td>
-                    {{ book.screen|resize_image('100px', '100px' ) }}
+                    {{ book.screen|resize_image('100px', '100px') }}
                 </td>
                 <td>{% if book.readDate %}{{ book.readDate|date('d.m.Y H:i:s') }}{% endif %}</td>
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}

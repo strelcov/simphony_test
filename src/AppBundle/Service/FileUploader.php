@@ -39,16 +39,21 @@ class FileUploader
 
     public function emptyDirectory($dirname, $selfDelete = false)
     {
-        if (is_dir($dirname))
-            $dirHandle = opendir($dirname);
-        if (!$dirHandle)
+        if (!is_dir($dirname)) {
             return false;
+        }
+        $dirHandle = opendir($dirname);
+        if (!$dirHandle) {
+            return false;
+        }
         while ($file = readdir($dirHandle)) {
             if ($file != "." && $file != "..") {
-                if (!is_dir($dirname . "/" . $file))
+                if (!is_dir($dirname . "/" . $file)) {
                     @unlink($dirname . "/" . $file);
-                else
+                }
+                else {
                     $this->emptyDirectory($dirname . '/' . $file, true);
+                }
             }
         }
         closedir($dirHandle);

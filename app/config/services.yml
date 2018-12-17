@@ -38,6 +38,9 @@ services:
         tags:
             - { name: doctrine.event_listener, event: preRemove }
 
+    AppBundle\Repository\:
+        resource: '../../src/AppBundle/Repository'
+
     app.twig_extension:
         arguments:
             $path: '%books_public_directory%'

@@ -2,8 +2,11 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Action\DeleteBookScreen;
 use AppBundle\Entity\Book;
+use AppBundle\Repository\BookRepository;
 use AppBundle\Service\FileUploader;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -12,6 +15,17 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BookController extends Controller
 {
+
+    /**
+     * @var BookRepository
+     */
+    private $bookRepository;
+
+    public function __construct(BookRepository $bookRepository)
+    {
+        $this->bookRepository = $bookRepository;
+    }
+
     /**
      * Lists all book entities.
      *
@@ -20,9 +34,7 @@ class BookController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $books = $em->getRepository('AppBundle:Book')->findAll();
+        $books = $this->bookRepository->findAllWithReadSort();
 
         return $this->render('book/index.html.twig', array(
             'books' => $books,
@@ -42,12 +54,14 @@ class BookController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var EntityManager $em */
             $em = $this->getDoctrine()->getManager();
             $em->persist($book);
 
             $this->saveFiles($book, $fileUploader);
 
             $em->flush();
+            $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
 
             return $this->redirectToRoute('homepage');
         }
@@ -96,8 +110,10 @@ class BookController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
+            /** @var EntityManager $em */
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
             return $this->redirectToRoute('book_edit', array('id' => $book->getId()));
         }
 
@@ -115,12 +131,14 @@ class BookController extends Controller
      */
     public function deleteAction(Book $book)
     {
-        if(!$book) {
+        if (!$book) {
             throw new NotFoundHttpException('Книга не найдена');
         }
+        /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $em->remove($book);
         $em->flush();
+        $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
 
         return $this->redirectToRoute('homepage');
     }
@@ -132,17 +150,63 @@ class BookController extends Controller
      */
     public function downloadAction(Book $book)
     {
-        if(!$book) {
+        if (!$book) {
             throw new NotFoundHttpException('Книга не найдена');
         }
-        if(empty($book->getFilePath())) {
+        if (empty($book->getFilePath())) {
             throw new NotFoundHttpException('Книга не была загружена');
         }
-        if(!$book->getAllowDownload()) {
+        if (!$book->getAllowDownload()) {
             throw new NotFoundHttpException('Скачивание запрещено');
         }
         $path = $this->getParameter('books_directory') . '/' . $book->getFilePath();
 
         return $this->file($path);
+    }
+
+    /**
+     * Deletes a book screen.
+     *
+     * @Route("/book/{id}/delete-screen", name="book_delete_screen")
+     * @Method("POST")
+     */
+    public function deleteScreenAction(Book $book)
+    {
+        if (!$book) {
+            throw new NotFoundHttpException('Книга не найдена');
+        }
+        if (empty($book->getScreen())) {
+            throw new NotFoundHttpException('Обложка не найдена');
+        }
+        /**
+         * @var DeleteBookScreen $deleteScreenAction
+         */
+        $deleteScreenAction = $this->container->get(DeleteBookScreen::class);
+        $deleteScreenAction->execute($book);
+
+        return;
+    }
+
+    /**
+     * Deletes a book file.
+     *
+     * @Route("/book/{id}/delete-file", name="book_delete_file")
+     * @Method("POST")
+     */
+    public function deleteFileAction(Book $book)
+    {
+        if (!$book) {
+            throw new NotFoundHttpException('Книга не найдена');
+        }
+        if (empty($book->getFilePath())) {
+            throw new NotFoundHttpException('Файл книги не найден');
+        }
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($book);
+        $em->flush();
+        $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
+
+        return $this->redirectToRoute('book_edit', array('id' => $book->getId()));
     }
 }

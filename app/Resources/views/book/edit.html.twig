@@ -7,8 +7,61 @@
 
     {{ form_start(edit_form) }}
         {{ form_widget(edit_form) }}
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="screen_block">
+                {{ book.screen|resize_image('300px', '300px') }}
+                {% if book.screen != '' %}
+                    &nbsp; <a class="remove_screen" href="{{ path('book_delete_screen', { 'id': book.id }) }}">Удалить обложку</a>
+                {% endif %}
+            </div>
+            <hr/>
+            <div id="file_block">
+                {% if book.filePath != '' %}
+                    <a href="{{ path('book_download', { 'id': book.id }) }}">Скачать файл</a> |
+                    <a class="remove_file" href="{{ path('book_delete_file', { 'id': book.id }) }}">Удалить файл</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
         <input type="submit" class="btn btn-primary" value="Сохранить" />
     {{ form_end(edit_form) }}
 
     <a class="btn btn-secondary" href="{{ path('homepage') }}">К списку книг</a>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            $('.remove_screen').click(function (e) {
+                e.preventDefault();
+                removeAjax($(this).attr('href'), '#screen_block');
+                return false;
+            });
+
+            $('.remove_file').click(function (e) {
+                e.preventDefault();
+                removeAjax($(this).attr('href'), '#file_block');
+                return false;
+            });
+
+            function removeAjax(url, wrapper) {
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data:$('#contactform').serialize(),
+                    success: function(data) {
+                        $(wrapper).html('');
+                    },
+                    error: function () {
+                        $(wrapper).append('Ошибка при удалении');
+                    }
+                });
+            }
+
+        });
+    </script>
 {% endblock %}
