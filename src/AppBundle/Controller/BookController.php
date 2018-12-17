@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Action\DeleteBookFile;
 use AppBundle\Action\DeleteBookScreen;
 use AppBundle\Entity\Book;
 use AppBundle\Repository\BookRepository;
@@ -9,6 +10,7 @@ use AppBundle\Service\FileUploader;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -184,7 +186,7 @@ class BookController extends Controller
         $deleteScreenAction = $this->container->get(DeleteBookScreen::class);
         $deleteScreenAction->execute($book);
 
-        return;
+        return new Response();
     }
 
     /**
@@ -201,12 +203,12 @@ class BookController extends Controller
         if (empty($book->getFilePath())) {
             throw new NotFoundHttpException('Файл книги не найден');
         }
-        /** @var EntityManager $em */
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($book);
-        $em->flush();
-        $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
+        /**
+         * @var DeleteBookScreen $deleteScreenAction
+         */
+        $deleteScreenAction = $this->container->get(DeleteBookFile::class);
+        $deleteScreenAction->execute($book);
 
-        return $this->redirectToRoute('book_edit', array('id' => $book->getId()));
+        return new Response();
     }
 }

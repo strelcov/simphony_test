@@ -41,6 +41,10 @@ services:
     AppBundle\Repository\:
         resource: '../../src/AppBundle/Repository'
 
+    AppBundle\Action\:
+        resource: '../../src/AppBundle/Action'
+        public: true
+
     app.twig_extension:
         arguments:
             $path: '%books_public_directory%'

@@ -7,7 +7,7 @@ use AppBundle\Service\FileUploader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 
-class DeleteBookScreen
+class DeleteBookFile
 {
     /**
      * @var FileUploader
@@ -31,12 +31,12 @@ class DeleteBookScreen
     public function execute(Book $book)
     {
         $dateFolder = $book->getCreatedAt()->format('Y-m');
-        $path = $dateFolder . DIRECTORY_SEPARATOR . $book->getId() . DIRECTORY_SEPARATOR . $book->getScreen();
+        $path = $dateFolder . DIRECTORY_SEPARATOR . $book->getId() . DIRECTORY_SEPARATOR . $book->getFilePath();
         $fileIsDel = $this->uploader->deleteFile($path);
         if (!$fileIsDel) {
             throw new \Exception('Не получилось удалить файл');
         }
-        $book->setScreen('');
+        $book->setFilePath('');
         $this->em->flush();
         $this->em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
     }
