@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Action\DeleteBook;
 use AppBundle\Action\DeleteBookFile;
 use AppBundle\Action\DeleteBookScreen;
 use AppBundle\Entity\Book;
@@ -136,11 +137,8 @@ class BookController extends Controller
         if (!$book) {
             throw new NotFoundHttpException('Книга не найдена');
         }
-        /** @var EntityManager $em */
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($book);
-        $em->flush();
-        $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
+        $deleteBookAction = $this->container->get(DeleteBook::class);
+        $deleteBookAction->execute($book);
 
         return $this->redirectToRoute('homepage');
     }
@@ -206,8 +204,8 @@ class BookController extends Controller
         /**
          * @var DeleteBookScreen $deleteScreenAction
          */
-        $deleteScreenAction = $this->container->get(DeleteBookFile::class);
-        $deleteScreenAction->execute($book);
+        $deleteFileAction = $this->container->get(DeleteBookFile::class);
+        $deleteFileAction->execute($book);
 
         return new Response();
     }
