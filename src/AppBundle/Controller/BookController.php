@@ -8,13 +8,9 @@ use AppBundle\Action\DeleteBookFile;
 use AppBundle\Action\DeleteBookScreen;
 use AppBundle\Action\UpdateBook;
 use AppBundle\Entity\Book;
-use AppBundle\Form\BookType;
 use AppBundle\Repository\BookRepository;
-use AppBundle\Service\FileUploader;
-use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -61,8 +57,8 @@ class BookController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $deleteBookAction = $this->container->get(AddBook::class);
-            $deleteBookAction->execute($book, $form);
+            $addBookAction = $this->container->get(AddBook::class);
+            $addBookAction->execute($book, $form);
 
             return $this->redirectToRoute('homepage');
         }
@@ -79,14 +75,14 @@ class BookController extends Controller
      * @Route("/book/{id}/edit", name="book_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Book $book, FileUploader $fileUploader)
+    public function editAction(Request $request, Book $book)
     {
         $editForm = $this->createForm('AppBundle\Form\BookType', $book);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $deleteBookAction = $this->container->get(UpdateBook::class);
-            $deleteBookAction->execute($book, $editForm);
+            $updateBookAction = $this->container->get(UpdateBook::class);
+            $updateBookAction->execute($book, $editForm);
 
             return $this->redirectToRoute('book_edit', array('id' => $book->getId()));
         }

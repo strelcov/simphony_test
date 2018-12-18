@@ -38,6 +38,12 @@ services:
         tags:
             - { name: doctrine.event_listener, event: preRemove }
 
+    AppBundle\EventListener\BookSerializeListener:
+        arguments:
+            $domain: '%domain%'
+        tags:
+            - { name: jms_serializer.event_subscriber, event: preSerialize }
+
     AppBundle\Repository\:
         resource: '../../src/AppBundle/Repository'
 
