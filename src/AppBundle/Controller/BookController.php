@@ -2,15 +2,19 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Action\AddBook;
 use AppBundle\Action\DeleteBook;
 use AppBundle\Action\DeleteBookFile;
 use AppBundle\Action\DeleteBookScreen;
+use AppBundle\Action\UpdateBook;
 use AppBundle\Entity\Book;
+use AppBundle\Form\BookType;
 use AppBundle\Repository\BookRepository;
 use AppBundle\Service\FileUploader;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -50,21 +54,15 @@ class BookController extends Controller
      * @Route("/book/new", name="book_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request, FileUploader $fileUploader)
+    public function newAction(Request $request)
     {
         $book = new Book();
         $form = $this->createForm('AppBundle\Form\BookType', $book);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var EntityManager $em */
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($book);
-
-            $this->saveFiles($book, $fileUploader);
-
-            $em->flush();
-            $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
+            $deleteBookAction = $this->container->get(AddBook::class);
+            $deleteBookAction->execute($book, $form);
 
             return $this->redirectToRoute('homepage');
         }
@@ -75,48 +73,21 @@ class BookController extends Controller
         ));
     }
 
-    private function saveFiles(Book $book, FileUploader $fileUploader)
-    {
-        if (!empty($book->getScreen())) {
-            $screenName = $fileUploader->upload(
-                $book->getScreen(),
-                $book->getId(),
-                $book->getCreatedAt()->format('Y-m')
-            );
-            $book->setScreen($screenName);
-        } else {
-            //TODO: не получилось сделать по умолчанию пустую строку, в бд хочет записаться null
-            $book->setScreen('');
-        }
-        if (!empty($book->getFilePath())) {
-            $fileName = $fileUploader->upload(
-                $book->getFilePath(),
-                $book->getId(),
-                $book->getCreatedAt()->format('Y-m')
-            );
-            $book->setFilePath($fileName);
-        } else {
-            //TODO: не получилось сделать по умолчанию пустую строку, в бд хочет записаться null
-            $book->setFilePath('');
-        }
-    }
-
     /**
      * Displays a form to edit an existing book entity.
      *
      * @Route("/book/{id}/edit", name="book_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Book $book)
+    public function editAction(Request $request, Book $book, FileUploader $fileUploader)
     {
         $editForm = $this->createForm('AppBundle\Form\BookType', $book);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            /** @var EntityManager $em */
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
-            $em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
+            $deleteBookAction = $this->container->get(UpdateBook::class);
+            $deleteBookAction->execute($book, $editForm);
+
             return $this->redirectToRoute('book_edit', array('id' => $book->getId()));
         }
 

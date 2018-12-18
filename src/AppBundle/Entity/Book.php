@@ -33,20 +33,10 @@ class Book
     private $author;
     /**
      * @ORM\Column(type="string", options={"default":""})
-     * @Assert\Image(
-     *     maxSize = "5M",
-     *     maxSizeMessage = "Максимальный размер файла 5MB.",
-     *     mimeTypes = {"image/png", "image/jpg", "image/jpeg"},
-     *     mimeTypesMessage = "Необъодимо загрузить изображение"
-     * )
      */
     private $screen = '';
     /**
      * @ORM\Column(type="string", options={"default":""})
-     * @Assert\File(
-     *     maxSize = "5M",
-     *     maxSizeMessage = "Максимальный размер файла 5MB.",
-     * )
      */
     private $filePath = '';
     /**

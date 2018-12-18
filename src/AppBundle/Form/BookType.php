@@ -12,6 +12,9 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\Length;
 
 class BookType extends AbstractType
 {
@@ -27,12 +30,28 @@ class BookType extends AbstractType
             ->add('screen', FileType::class, [
                 'label' => 'Обложка, Формат: png, jpg, до 5Mb',
                 'data_class' => null,
+                'mapped' => false,
                 'required' => false,
+                'constraints' => [
+                    new Image([
+                        'maxSize' => '5M',
+                        'maxSizeMessage' => 'Максимальный размер файла 5MB.',
+                        'mimeTypes' => ["image/png", "image/jpg", "image/jpeg"],
+                        'mimeTypesMessage' => 'Необходимо загрузить изображение',
+                    ])
+                ],
             ])
             ->add('filePath', FileType::class, [
                 'label' => 'Файл книги, Размер до 5Mb',
+                'mapped' => false,
                 'data_class' => null,
                 'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '5M',
+                        'maxSizeMessage' => 'Максимальный размер файла 5MB.',
+                    ])
+                ],
             ])
             ->add('readDate', DateType::class, [
                 'label' => 'Дата прочтения',
