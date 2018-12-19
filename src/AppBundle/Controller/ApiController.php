@@ -5,9 +5,11 @@ namespace AppBundle\Controller;
 use AppBundle\Action\AddBook;
 use AppBundle\Action\UpdateBook;
 use AppBundle\Entity\Book;
+use AppBundle\Form\BookApiType;
 use AppBundle\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,16 +82,15 @@ class ApiController extends Controller
             return $validateApiKey;
         }
         $book = new Book();
-        $form = $this->createForm('AppBundle\Form\BookType', $book);
-        $form->handleRequest($request);
-
+        $form = $this->createForm(BookApiType::class, $book);
+        //$form->submit($request->request->all());    // $_POST
+        $form->submit($request->query->all());      // $_GET
         if (!$form->isValid()) {
-            return new JsonResponse([
-                'error' => 'validation error'
-            ], 500);
+            return new JsonResponse($this->serialize($form->getErrors()), 400);
         }
+        /** @var AddBook $addBookAction */
         $addBookAction = $this->container->get(AddBook::class);
-        $addBookAction->execute($book, $form);
+        $addBookAction->execute($book, $form, false);
 
         return new JsonResponse([
             'book' => $this->serialize($book),
@@ -109,15 +110,15 @@ class ApiController extends Controller
         if ($validateApiKey !== true) {
             return $validateApiKey;
         }
-        $editForm = $this->createForm('AppBundle\Form\BookType', $book);
-        $editForm->handleRequest($request);
+        $editForm = $this->createForm(BookApiType::class, $book);
+        //$editForm->submit($request->request->all());    // $_POST
+        $editForm->submit($request->query->all());      // $_GET
         if (!$editForm->isValid()) {
-            return new JsonResponse([
-                'error' => 'validation error'
-            ], 500);
+            return new JsonResponse($this->serialize($editForm->getErrors()), 400);
         }
+        /** @var UpdateBook $updateBookAction */
         $updateBookAction = $this->container->get(UpdateBook::class);
-        $updateBookAction->execute($book, $editForm);
+        $updateBookAction->execute($book, $editForm, false);
 
         return new JsonResponse([
             'book' => $this->serialize($book),

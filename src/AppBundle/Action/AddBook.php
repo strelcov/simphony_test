@@ -28,10 +28,12 @@ class AddBook
      * @param Book $book
      * @throws \Exception
      */
-    public function execute(Book $book, $form)
+    public function execute(Book $book, $form, $withUploadingFiles)
     {
         $this->em->persist($book);
-        $this->bookFileSaver->saveFiles($book, $form);
+        if ($withUploadingFiles) {
+            $this->bookFileSaver->saveFiles($book, $form);
+        }
         $this->em->flush();
         $this->em->getConfiguration()->getResultCacheImpl()->delete(BookRepository::ALL_BOOK_CACHE_KEY);
     }

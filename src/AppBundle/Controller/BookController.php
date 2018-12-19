@@ -8,6 +8,7 @@ use AppBundle\Action\DeleteBookFile;
 use AppBundle\Action\DeleteBookScreen;
 use AppBundle\Action\UpdateBook;
 use AppBundle\Entity\Book;
+use AppBundle\Form\BookType;
 use AppBundle\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -53,12 +54,13 @@ class BookController extends Controller
     public function newAction(Request $request)
     {
         $book = new Book();
-        $form = $this->createForm('AppBundle\Form\BookType', $book);
+        $form = $this->createForm(BookType::class, $book);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var AddBook $addBookAction */
             $addBookAction = $this->container->get(AddBook::class);
-            $addBookAction->execute($book, $form);
+            $addBookAction->execute($book, $form, true);
 
             return $this->redirectToRoute('homepage');
         }
@@ -77,12 +79,12 @@ class BookController extends Controller
      */
     public function editAction(Request $request, Book $book)
     {
-        $editForm = $this->createForm('AppBundle\Form\BookType', $book);
+        $editForm = $this->createForm(BookType::class, $book);
         $editForm->handleRequest($request);
-
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            /** @var UpdateBook $updateBookAction */
             $updateBookAction = $this->container->get(UpdateBook::class);
-            $updateBookAction->execute($book, $editForm);
+            $updateBookAction->execute($book, $editForm, true);
 
             return $this->redirectToRoute('book_edit', array('id' => $book->getId()));
         }
@@ -104,6 +106,7 @@ class BookController extends Controller
         if (!$book) {
             throw new NotFoundHttpException('Книга не найдена');
         }
+        /** @var DeleteBook $deleteBookAction */
         $deleteBookAction = $this->container->get(DeleteBook::class);
         $deleteBookAction->execute($book);
 
