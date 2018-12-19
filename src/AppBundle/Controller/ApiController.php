@@ -41,7 +41,7 @@ class ApiController extends Controller
         }
         if ($apikey != $this->getParameter('apikey')) {
             return new JsonResponse([
-                'error' => 'api is incorrect'
+                'error' => 'api key is incorrect'
             ], 401);
         }
 
@@ -72,7 +72,7 @@ class ApiController extends Controller
      * Creates a new book entity.
      *
      * @Route("/api/v1/books/add", name="api_books_add")
-     * @Method({"GET", "POST"})
+     * @Method({"POST"})
      */
     public function newAction(Request $request)
     {
@@ -81,10 +81,15 @@ class ApiController extends Controller
         if ($validateApiKey !== true) {
             return $validateApiKey;
         }
+        if (!$request->isMethod('POST')) {
+            return new JsonResponse([
+                'error' => 'you must use method post',
+            ], 400);
+        }
         $book = new Book();
         $form = $this->createForm(BookApiType::class, $book);
-        //$form->submit($request->request->all());    // $_POST
-        $form->submit($request->query->all());      // $_GET
+        $form->submit($request->request->all());    // $_POST
+        //$form->submit($request->query->all());      // $_GET
         if (!$form->isValid()) {
             return new JsonResponse($this->serialize($form->getErrors()), 400);
         }
@@ -101,7 +106,7 @@ class ApiController extends Controller
      * Displays a form to edit an existing book entity.
      *
      * @Route("/api/v1/books/{id}/edit", name="api_book_edit")
-     * @Method({"GET", "POST"})
+     * @Method({"POST"})
      */
     public function editAction(Request $request, Book $book)
     {
@@ -110,9 +115,14 @@ class ApiController extends Controller
         if ($validateApiKey !== true) {
             return $validateApiKey;
         }
+        if (!$request->isMethod('POST')) {
+            return new JsonResponse([
+                'error' => 'you must use method post',
+            ], 400);
+        }
         $editForm = $this->createForm(BookApiType::class, $book);
-        //$editForm->submit($request->request->all());    // $_POST
-        $editForm->submit($request->query->all());      // $_GET
+        $editForm->submit($request->request->all());    // $_POST
+        //$editForm->submit($request->query->all(), false);      // $_GET
         if (!$editForm->isValid()) {
             return new JsonResponse($this->serialize($editForm->getErrors()), 400);
         }

@@ -25,7 +25,7 @@
                 <td>
                     {{ book.screen|resize_image('100px', '100px') }}
                 </td>
-                <td>{% if book.readDate %}{{ book.readDate|date('d.m.Y H:i:s') }}{% endif %}</td>
+                <td>{% if book.readDate %}{{ book.readDate|date('d.m.Y') }}{% endif %}</td>
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                     <td class="text-right">
                         {% if book.allowDownload and book.filePath != '' %}
