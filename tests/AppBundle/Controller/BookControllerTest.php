@@ -2,65 +2,177 @@
 
 namespace Tests\AppBundle\Tests\Controller;
 
+use AppBundle\Service\FileUploader;
+use Doctrine\ORM\EntityManager;
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BookControllerTest extends WebTestCase
 {
+    private $userLogin;
+    private $userPassword;
+    private $bookDir;
+    /**
+     * @var FileUploader
+     */
+    private $fileUploader;
+    /**
+     * @var EntityManager
+     */
+    private $em;
 
-    public function testAddBook()
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        $client = static::createClient();
+        $this->bookDir = $client->getContainer()->getParameter('books_directory');
+        $this->userLogin = $client->getContainer()->getParameter('test_db_user_name');
+        $this->userPassword = $client->getContainer()->getParameter('test_db_user_password');
+        $this->em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $this->fileUploader = $client->getContainer()->get(FileUploader::class);
+        $this->em->createQuery('DELETE AppBundle:Book b')->execute();
+        parent::__construct($name, $data, $dataName);
+    }
+
+    private function clearBookDir()
+    {
+        $this->fileUploader->emptyDirectory($this->bookDir . '/' . date('Y-m'), true);
+    }
+
+    private function scsAuth(Client $client)
+    {
+        $crawler = $client->request('GET', '/login');
+        $form = $crawler->selectButton('Войти')->form([
+            '_username'  => $this->userLogin,
+            '_password'  => $this->userPassword,
+        ]);
+        $client->submit($form);
+        return $client->followRedirect();
+    }
+
+    public function testAuthWithError()
     {
         $client = static::createClient();
 
         $crawler = $client->request('GET', '/book/new');
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
         $this->assertContains('/book/new', $crawler->getUri());
-        //дальше надо либо регать юзера, либо использовать зареганного
+        $crawler = $client->followRedirect();
+        $this->assertContains('/login', $crawler->getUri());
+
+        $variants = [
+            'Авторизация с неправильным логином и паролем' => [
+                '_username'  => 'wrongtestuser',
+                '_password'  => 'wrongtestpassword',
+            ],
+            'Авторизация с неправильным логином' => [
+                '_username'  => 'wrongtestuser',
+                '_password'  => $this->userPassword,
+            ],
+            'Авторизация с неправильным паролем' => [
+                '_username'  => $this->userLogin,
+                '_password'  => 'wrongtestpassword',
+            ],
+        ];
+        foreach ($variants as $message => $variant) {
+            $form = $crawler->selectButton('Войти')->form($variant);
+            $client->submit($form);
+            $crawler = $client->followRedirect();
+            $this->assertContains('/login', $crawler->getUri(), $message);
+        }
     }
 
-    /*
-    public function testCompleteScenario()
+    public function testSuccessAuth()
     {
-        // Create a new client to browse the application
         $client = static::createClient();
-
-        // Create a new entry in the database
-        $crawler = $client->request('GET', '/book/');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /book/");
-        $crawler = $client->click($crawler->selectLink('Create a new entry')->link());
-
-        // Fill in the form and submit it
-        $form = $crawler->selectButton('Create')->form(array(
-            'appbundle_book[field_name]'  => 'Test',
-            // ... other fields to fill
-        ));
-
-        $client->submit($form);
-        $crawler = $client->followRedirect();
-
-        // Check data in the show view
-        $this->assertGreaterThan(0, $crawler->filter('td:contains("Test")')->count(), 'Missing element td:contains("Test")');
-
-        // Edit the entity
-        $crawler = $client->click($crawler->selectLink('Edit')->link());
-
-        $form = $crawler->selectButton('Update')->form(array(
-            'appbundle_book[field_name]'  => 'Foo',
-            // ... other fields to fill
-        ));
-
-        $client->submit($form);
-        $crawler = $client->followRedirect();
-
-        // Check the element contains an attribute with value equals "Foo"
-        $this->assertGreaterThan(0, $crawler->filter('[value="Foo"]')->count(), 'Missing element [value="Foo"]');
-
-        // Delete the entity
-        $client->submit($crawler->selectButton('Delete')->form());
-        $crawler = $client->followRedirect();
-
-        // Check the entity has been delete on the list
-        $this->assertNotRegExp('/Foo/', $client->getResponse()->getContent());
+        $crawler = $this->scsAuth($client);
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Вы авторизованы как")')->count(),
+            'Неудачная попытка авторизации'
+        );
     }
 
-    */
+    public function testAddBook()
+    {
+        $client = static::createClient();
+        $this->scsAuth($client);
+        $cases = $this->getSuccessParamsVariants('appbundle_book');
+        foreach ($cases as $message => $params) {
+            //В цикле прогнать по успешным и неуспешным кейсам
+            $crawler = $client->request('GET', '/book/new');
+            $form = $crawler->selectButton('Сохранить')->form($params);
+            $client->submit($form);
+            $crawler = $client->followRedirect();
+            $this->assertEquals(200, $client->getResponse()->getStatusCode());
+            $this->assertNotContains('/book/new', $crawler->getUri());
+            $this->assertGreaterThan(
+                0,
+                $crawler->filter('html:contains("Список книг")')->count(),
+                $message
+            );
+        }
+        $this->clearBookDir();
+    }
+
+    public function getSuccessParamsVariants($formName)
+    {
+        $photo = new UploadedFile(
+            $this->bookDir . '/fixtures/1.jpg',
+            '1.jpg',
+            'image/jpeg'
+        );
+        $file = new UploadedFile(
+            $this->bookDir . '/fixtures/1.txt',
+            'photo.jpg',
+            'image/jpeg'
+        );
+        return [
+            'Не получилось вставить запись со всеми параметрами' => [
+                "{$formName}[title]" => 'книга 1',
+                "{$formName}[allowDownload]" => 1,
+                "{$formName}[readDate]" => '2018-12-12',
+                "{$formName}[screen]" => $photo,
+                "{$formName}[filePath]" => $file,
+            ],
+            'Не получилось вставить запись без allowDownload' => [
+                "{$formName}[title]" => 'книга 2',
+                "{$formName}[readDate]" => '2018-12-12',
+                "{$formName}[screen]" => $photo,
+                "{$formName}[filePath]" => $file,
+            ],
+            'Не получилось вставить запись без фото' => [
+                "{$formName}[title]" => 'книга 3',
+                "{$formName}[allowDownload]" => 1,
+                "{$formName}[readDate]" => '2018-12-12',
+                "{$formName}[filePath]" => $file,
+            ],
+            'Не получилось вставить запись без файла книги' => [
+                "{$formName}[title]" => 'книга 4',
+                "{$formName}[allowDownload]" => 1,
+                "{$formName}[readDate]" => '2018-12-12',
+                "{$formName}[screen]" => $photo,
+            ],
+            'Не получилось вставить запись без файла книги и фото' => [
+                "{$formName}[title]" => 'книга 5',
+                "{$formName}[allowDownload]" => 1,
+                "{$formName}[readDate]" => '2018-12-12',
+            ],
+        ];
+    }
+
+    public function getErrorParamsVariants($formName)
+    {
+        return [
+            'Получилось вставить запись без заголовка' => [
+                "{$formName}[allowDownload]" => 1,
+                "{$formName}[readDate]" => '2018-12-12',
+            ],
+            'Получилось вставить запись без даты прочтения' => [
+                "{$formName}[title]" => 'книга 6',
+                "{$formName}[allowDownload]" => 0,
+            ],
+        ];
+    }
+
 }
