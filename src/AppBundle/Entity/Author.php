@@ -39,4 +39,12 @@ class Author
     {
         return $this->name;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

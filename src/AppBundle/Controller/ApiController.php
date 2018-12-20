@@ -88,8 +88,7 @@ class ApiController extends Controller
         }
         $book = new Book();
         $form = $this->createForm(BookApiType::class, $book);
-        $form->submit($request->request->all());    // $_POST
-        //$form->submit($request->query->all());      // $_GET
+        $form->submit($request->request->all());
         if (!$form->isValid()) {
             return new JsonResponse($this->serialize($form->getErrors()), 400);
         }
@@ -121,7 +120,7 @@ class ApiController extends Controller
             ], 400);
         }
         $editForm = $this->createForm(BookApiType::class, $book);
-        $editForm->submit($request->request->all());    // $_POST
+        $editForm->submit($request->request->all(), false);    // $_POST
         //$editForm->submit($request->query->all(), false);      // $_GET
         if (!$editForm->isValid()) {
             return new JsonResponse($this->serialize($editForm->getErrors()), 400);

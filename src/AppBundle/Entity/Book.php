@@ -53,6 +53,7 @@ class Book
     /**
      * @ORM\Column(type="date", nullable=true, options={"default":NULL})
      * @Assert\Date
+     * @Assert\NotBlank
      * @Expose
      */
     private $readDate = null;

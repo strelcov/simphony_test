@@ -38,6 +38,10 @@ services:
         tags:
             - { name: doctrine.event_listener, event: preRemove }
 
+    AppBundle\EventListener\JsonExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
     AppBundle\EventListener\BookSerializeListener:
         arguments:
             $domain: '%domain%'
