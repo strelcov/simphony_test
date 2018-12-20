@@ -15,7 +15,6 @@ use JMS\Serializer\Annotation\Accessor;
  */
 class Book
 {
-    const NUMBER_OF_ITEMS = 10;
 
     /**
      * @ORM\Id

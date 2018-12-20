@@ -21,3 +21,11 @@ parameters:
     redis.port: 6379
     apikey: 111
     domain: http://demo.your.url
+    test_database_host: localhost
+    test_database_port: null
+    test_database_name: test_db_name
+    test_database_user: test_db_user
+    test_database_password: test_db_pw
+    test_db_user_name: testuser
+    test_db_user_email: testuser@test.ru
+    test_db_user_password: 111111

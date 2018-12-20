@@ -2,38 +2,34 @@
 
 namespace Tests\AppBundle\Tests\Controller;
 
+use AppBundle\Entity\Author;
 use AppBundle\Entity\Book;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Console\Input\StringInput;
 
 class ApiControllerTest extends WebTestCase
 {
-    protected static $application;
+    /**
+     * @var string
+     */
+    private $apikey;
+    /**
+     * @var Author
+     */
+    private $author;
+    /**
+     * @var EntityManager
+     */
+    private $em;
 
-    protected function setUp()
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
-        //$this->runCommand('doctrine:database:create');
-        //$this->runCommand('doctrine:schema:update --force');
-        //$this->runCommand('doctrine:fixtures:load --n');
-    }
-
-    protected function getApplication()
-    {
-        if (null === self::$application) {
-            $client = static::createClient();
-            self::$application = new Application($client->getKernel());
-            self::$application->setAutoExit(false);
-        }
-
-        return self::$application;
-    }
-
-    private function runCommand($command)
-    {
-        $command = sprintf('%s --quiet', $command);
-
-        return $this->getApplication()->run(new StringInput($command));
+        $client = static::createClient();
+        $this->apikey = $client->getKernel()->getContainer()->getParameter('apikey');
+        $this->em = $client->getKernel()->getContainer()->get('doctrine.orm.entity_manager');
+        $this->author = $this->em->getRepository(Author::class)->findOneBy([]);
+        $this->em->createQuery('DELETE AppBundle:Book b')->execute();
+        parent::__construct($name, $data, $dataName);
     }
 
     public function testAuthError()
@@ -57,9 +53,8 @@ class ApiControllerTest extends WebTestCase
     public function testAddBookByGetMethod()
     {
         $client = static::createClient();
-        $apikey = $client->getKernel()->getContainer()->getParameter('apikey');
         $params = [
-            'apikey' => $apikey,
+            'apikey' => $this->apikey,
             'author' => 1,
             'title' => 'test book scs',
             'allowDownload' => 1,
@@ -76,8 +71,8 @@ class ApiControllerTest extends WebTestCase
     public function testAddBookWithSuccessResult()
     {
         $client = static::createClient();
-        $apikey = $client->getKernel()->getContainer()->getParameter('apikey');
-        $paramsVariants = $this->getSuccessParamsVariants($apikey);
+        $paramsVariants = $this->getSuccessParamsVariants($this->apikey, $this->author->getId());
+
         foreach ($paramsVariants as $message => $params) {
             $client->request('POST', '/api/v1/books/add', $params);
             $response = $client->getResponse();
@@ -103,8 +98,7 @@ class ApiControllerTest extends WebTestCase
     public function testAddBookWithErrorResult()
     {
         $client = static::createClient();
-        $apikey = $client->getKernel()->getContainer()->getParameter('apikey');
-        $paramsVariants = $this->getErrorParamsVariants($apikey);
+        $paramsVariants = $this->getErrorParamsVariants($this->apikey, $this->author->getId());
         foreach ($paramsVariants as $message => $params) {
             $client->request('POST', '/api/v1/books/add', $params);
             $response = $client->getResponse();
@@ -115,26 +109,26 @@ class ApiControllerTest extends WebTestCase
         }
     }
 
-    public function getSuccessParamsVariants($apikey)
+    public function getSuccessParamsVariants($apikey, $authorId)
     {
         return [
             'Не получилось вставить запись со всеми параметрами' => [
                 'apikey' => $apikey,
-                'author' => 1,
+                'author' => $authorId,
                 'title' => 'test book scs',
                 'allowDownload' => 1,
                 'readDate' => '2018-10-10',
             ],
             'Не получилось вставить запись без allowDownload' => [
                 'apikey' => $apikey,
-                'author' => 1,
+                'author' => $authorId,
                 'title' => 'test book scs',
                 'readDate' => '2018-10-10',
             ],
         ];
     }
 
-    public function getErrorParamsVariants($apikey)
+    public function getErrorParamsVariants($apikey, $authorId)
     {
         return [
             'Получилось вставить запись с несуществующим автором' => [
@@ -146,7 +140,7 @@ class ApiControllerTest extends WebTestCase
             ],
             'Получилось вставить запись без названия книги' => [
                 'apikey' => $apikey,
-                'author' => 1,
+                'author' => $authorId,
                 'allowDownload' => 1,
                 'readDate' => '2018-10-10',
             ],
@@ -158,20 +152,20 @@ class ApiControllerTest extends WebTestCase
             ],
             'Получилось вставить запись без даты прочтения' => [
                 'apikey' => $apikey,
-                'author' => 1,
+                'author' => $authorId,
                 'title' => 'test book',
                 'allowDownload' => 1,
             ],
             'Получилось вставить запись с неправильным форматом даты прочтения' => [
                 'apikey' => $apikey,
-                'author' => 1,
+                'author' => $authorId,
                 'title' => 'test book',
                 'allowDownload' => 1,
                 'readDate' => '10-10-2018',
             ],
             'Получилось вставить запись с пустым заголовком' => [
                 'apikey' => $apikey,
-                'author' => 1,
+                'author' => $authorId,
                 'title' => '',
                 'allowDownload' => 1,
                 'readDate' => '2018-10-10',
