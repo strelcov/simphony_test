@@ -16,4 +16,5 @@
 /vendor/
 /web/bundles/
 /web/books/*
+/web/test_books/books/*
 /.idea/*

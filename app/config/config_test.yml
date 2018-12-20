@@ -2,8 +2,9 @@ imports:
     - { resource: config_dev.yml }
 
 parameters:
-    books_public_directory: '/test_books'
+    books_public_directory: '/test_books/books'
     books_directory: '%kernel.project_dir%/web%books_public_directory%'
+    books_fixtures_directory: '%kernel.project_dir%/web/test_books/fixtures'
 
 framework:
     test: ~

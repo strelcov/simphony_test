@@ -13,6 +13,7 @@ class BookControllerTest extends WebTestCase
     private $userLogin;
     private $userPassword;
     private $bookDir;
+    private $bookDirFixture;
     /**
      * @var FileUploader
      */
@@ -26,6 +27,7 @@ class BookControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $this->bookDir = $client->getContainer()->getParameter('books_directory');
+        $this->bookDirFixture = $client->getContainer()->getParameter('books_fixtures_directory');
         $this->userLogin = $client->getContainer()->getParameter('test_db_user_name');
         $this->userPassword = $client->getContainer()->getParameter('test_db_user_password');
         $this->em = $client->getContainer()->get('doctrine.orm.entity_manager');
@@ -36,7 +38,7 @@ class BookControllerTest extends WebTestCase
 
     private function clearBookDir()
     {
-        $this->fileUploader->emptyDirectory($this->bookDir . '/' . date('Y-m'), true);
+        $this->fileUploader->emptyDirectory($this->bookDir);
     }
 
     private function scsAuth(Client $client)
@@ -118,12 +120,12 @@ class BookControllerTest extends WebTestCase
     public function getSuccessParamsVariants($formName)
     {
         $photo = new UploadedFile(
-            $this->bookDir . '/fixtures/1.jpg',
+            $this->bookDirFixture . '/1.jpg',
             '1.jpg',
             'image/jpeg'
         );
         $file = new UploadedFile(
-            $this->bookDir . '/fixtures/1.txt',
+            $this->bookDirFixture . '/1.txt',
             'photo.jpg',
             'image/jpeg'
         );
