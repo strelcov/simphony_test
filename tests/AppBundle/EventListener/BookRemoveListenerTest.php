@@ -2,8 +2,6 @@
 
 namespace Tests\AppBundle\EventListener;
 
-use AppBundle\Action\AddBook;
-use AppBundle\Action\DeleteBook;
 use AppBundle\Entity\Author;
 use AppBundle\Entity\Book;
 use AppBundle\Service\FileUploader;
@@ -22,10 +20,6 @@ class BookRemoveListenerTest extends WebTestCase
      */
     private $bookDirFixture;
     /**
-     * @var Author
-     */
-    private $author;
-    /**
      * @var EntityManager
      */
     private $em;
@@ -41,7 +35,7 @@ class BookRemoveListenerTest extends WebTestCase
         $this->bookDir = $this->container->getParameter('books_directory');
         $this->bookDirFixture = $this->container->getParameter('books_fixtures_directory');
         $this->em = $this->container->get('doctrine.orm.entity_manager');
-        $this->author = $this->em->getRepository(Author::class)->findOneBy([]);
+
         $this->container->get(FileUploader::class)->emptyDirectory($this->bookDir);
         parent::__construct($name, $data, $dataName);
     }
@@ -51,12 +45,13 @@ class BookRemoveListenerTest extends WebTestCase
         $photoName = '1.jpg';
         $fileName = '1.txt';
         //Create a book without files
+        $author = $this->em->getRepository(Author::class)->findOneBy([]);
         $book = new Book();
         $book->setReadDate(new \DateTime());
         $book->setTitle('unit test book');
-        $book->setAuthor($this->author);
-        $addBookAction = $this->container->get(AddBook::class);
-        $addBookAction->execute($book, null, false);
+        $book->setAuthor($author);
+        $this->em->persist($book);
+        $this->em->flush();
         $this->assertNotEmpty($book->getId(), 'Не удалось получить id книги');
 
         //Set file pathes (with book id)
@@ -88,8 +83,8 @@ class BookRemoveListenerTest extends WebTestCase
         $photoExists = $fileSystem->exists($this->bookDir . '/' . $photoPath);
         $this->assertTrue($photoExists, 'Фото не существует в директории книги');
 
-        $deleteBookAction = $this->container->get(DeleteBook::class);
-        $deleteBookAction->execute($book);
+        $this->em->remove($book);
+        $this->em->flush();
 
         //Проверяем, удалились ли файлы в директориях созданной книги
         $fileExists = $fileSystem->exists($this->bookDir . '/' . $filePath);
