@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Service\FileUploader;
 use Doctrine\ORM\EntityManager;
@@ -126,8 +126,7 @@ class BookControllerTest extends WebTestCase
         );
         $file = new UploadedFile(
             $this->bookDirFixture . '/1.txt',
-            'photo.jpg',
-            'image/jpeg'
+            '1.txt'
         );
         return [
             'Не получилось вставить запись со всеми параметрами' => [

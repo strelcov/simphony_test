@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Author;
 use AppBundle\Entity\Book;
@@ -25,8 +25,8 @@ class ApiControllerTest extends WebTestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         $client = static::createClient();
-        $this->apikey = $client->getKernel()->getContainer()->getParameter('apikey');
-        $this->em = $client->getKernel()->getContainer()->get('doctrine.orm.entity_manager');
+        $this->apikey = $client->getContainer()->getParameter('apikey');
+        $this->em = $client->getContainer()->get('doctrine.orm.entity_manager');
         $this->author = $this->em->getRepository(Author::class)->findOneBy([]);
         $this->em->createQuery('DELETE AppBundle:Book b')->execute();
         parent::__construct($name, $data, $dataName);
@@ -83,7 +83,7 @@ class ApiControllerTest extends WebTestCase
             $responseContent = json_decode($response->getContent());
             $this->assertNotEmpty($responseContent->book, 'Не найден результат метода добавления книги');
             /** @var Book $book */
-            $book = $client->getKernel()->getContainer()->get('jms_serializer')->deserialize($responseContent->book, Book::class, 'json');
+            $book = $client->getContainer()->get('jms_serializer')->deserialize($responseContent->book, Book::class, 'json');
             $this->assertEquals($params['title'], $book->getTitle(), 'Вставлен заголовок книги, который не ожидался');
             if (!empty($params['allowDownload'])) {
                 $this->assertEquals((bool)$params['allowDownload'], $book->getAllowDownload(), 'Вставлен параметр allowDownload, который не ожидался');
