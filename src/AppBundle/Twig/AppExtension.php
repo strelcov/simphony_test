@@ -3,6 +3,9 @@ namespace AppBundle\Twig;
 
 class AppExtension extends \Twig_Extension
 {
+    /**
+     * @var string
+     */
     private  $path;
 
     public function __construct($path = '%books_public_directory%')
@@ -10,6 +13,9 @@ class AppExtension extends \Twig_Extension
         $this->path = $path;
     }
 
+    /**
+     * @return array|\Twig_SimpleFilter[]
+     */
     public function getFilters()
     {
         return [
@@ -17,6 +23,12 @@ class AppExtension extends \Twig_Extension
         ];
     }
 
+    /**
+     * @param $img
+     * @param $maxWidth
+     * @param $maxHeight
+     * @return string
+     */
     public function resizeImage($img, $maxWidth, $maxHeight)
     {
         if (empty($img)) {

@@ -17,6 +17,10 @@ class BookFileSaver
         $this->fileUploader = $fileUploader;
     }
 
+    /**
+     * @param Book $book
+     * @param Form $form
+     */
     public function saveFiles(Book $book, Form $form)
     {
         if (!empty($form['screen']->getData())) {

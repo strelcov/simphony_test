@@ -7,6 +7,9 @@ use AppBundle\Service\FileUploader;
 
 class BookRemoveListener
 {
+    /**
+     * @var FileUploader
+     */
     private $uploader;
 
     public function __construct(FileUploader $uploader)
@@ -14,6 +17,9 @@ class BookRemoveListener
         $this->uploader = $uploader;
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();

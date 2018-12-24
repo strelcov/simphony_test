@@ -9,6 +9,9 @@ class BookRepository
 {
     const ALL_BOOK_CACHE_KEY = 'all_books';
 
+    /**
+     * @var \Doctrine\ORM\QueryBuilder
+     */
     private $queryBuilder;
 
     public function __construct(

@@ -25,11 +25,19 @@ class ApiController extends Controller
         $this->bookRepository = $bookRepository;
     }
 
+    /**
+     * @param $data
+     * @return mixed
+     */
     private function serialize($data)
     {
         return $this->container->get('jms_serializer')->serialize($data, 'json');
     }
 
+    /**
+     * @param $apikey
+     * @return bool|JsonResponse
+     */
     private function validateAuth($apikey)
     {
         if (empty($apikey)) {

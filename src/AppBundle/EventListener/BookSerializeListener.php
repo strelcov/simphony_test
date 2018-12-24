@@ -13,6 +13,9 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 class BookSerializeListener implements EventSubscriberInterface
 {
 
+    /**
+     * @var string
+     */
     private $domain;
 
     public function __construct($domain = '%domain%')
@@ -20,6 +23,9 @@ class BookSerializeListener implements EventSubscriberInterface
         $this->domain = $domain;
     }
 
+    /**
+     * @return array
+     */
     static public function getSubscribedEvents()
     {
         return [
@@ -31,6 +37,9 @@ class BookSerializeListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param PreSerializeEvent $event
+     */
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $book = $event->getObject();

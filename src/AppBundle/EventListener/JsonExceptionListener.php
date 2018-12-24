@@ -7,6 +7,9 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 class JsonExceptionListener
 {
+    /**
+     * @param GetResponseForExceptionEvent $event
+     */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $request = $event->getRequest();
