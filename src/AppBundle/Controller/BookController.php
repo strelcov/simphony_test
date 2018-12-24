@@ -11,7 +11,6 @@ use AppBundle\Entity\Book;
 use AppBundle\Form\BookType;
 use AppBundle\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,8 +32,7 @@ class BookController extends Controller
     /**
      * Lists all book entities.
      *
-     * @Route("/", name="homepage")
-     * @Method("GET")
+     * @Route("/", name="homepage", methods={"GET"})
      */
     public function indexAction()
     {
@@ -48,8 +46,7 @@ class BookController extends Controller
     /**
      * Creates a new book entity.
      *
-     * @Route("/book/new", name="book_new")
-     * @Method({"GET", "POST"})
+     * @Route("/book/new", name="book_new", methods={"GET", "POST"})
      */
     public function newAction(Request $request)
     {
@@ -74,8 +71,7 @@ class BookController extends Controller
     /**
      * Displays a form to edit an existing book entity.
      *
-     * @Route("/book/{id}/edit", name="book_edit")
-     * @Method({"GET", "POST"})
+     * @Route("/book/{id}/edit", name="book_edit", methods={"GET", "POST"})
      */
     public function editAction(Request $request, Book $book)
     {
@@ -98,8 +94,7 @@ class BookController extends Controller
     /**
      * Deletes a book entity.
      *
-     * @Route("/book/{id}/delete", name="book_delete")
-     * @Method("GET")
+     * @Route("/book/{id}/delete", name="book_delete", methods={"GET"})
      */
     public function deleteAction(Book $book)
     {
@@ -115,8 +110,7 @@ class BookController extends Controller
     /**
      * Download a book.
      *
-     * @Route("/book/{id}/download", name="book_download")
-     * @Method("GET")
+     * @Route("/book/{id}/download", name="book_download", methods={"GET"})
      */
     public function downloadAction(Book $book)
     {
@@ -137,8 +131,7 @@ class BookController extends Controller
     /**
      * Deletes a book screen.
      *
-     * @Route("/book/{id}/delete-screen", name="book_delete_screen")
-     * @Method("POST")
+     * @Route("/book/{id}/delete-screen", name="book_delete_screen", methods={"POST"})
      */
     public function deleteScreenAction(Book $book)
     {
@@ -160,8 +153,7 @@ class BookController extends Controller
     /**
      * Deletes a book file.
      *
-     * @Route("/book/{id}/delete-file", name="book_delete_file")
-     * @Method("POST")
+     * @Route("/book/{id}/delete-file", name="book_delete_file", methods={"POST"})
      */
     public function deleteFileAction(Book $book)
     {

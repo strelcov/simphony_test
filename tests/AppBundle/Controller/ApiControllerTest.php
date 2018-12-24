@@ -62,10 +62,9 @@ class ApiControllerTest extends WebTestCase
         ];
         $client->request('GET', '/api/v1/books/add', $params);
         $response = $client->getResponse();
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertNotEquals(200, $response->getStatusCode(), 'Добавление книги через GET вернуло неожидаемый тип ошибки');
         $responseContent = $response->getContent();
-        $this->assertContains('error', $responseContent);
-        $this->assertContains('must use method post', $responseContent);
+        $this->assertContains('error', $responseContent, 'Добавление книги через GET не вернуло ошибки в теле запроса');
     }
 
     public function testAddBookWithSuccessResult()

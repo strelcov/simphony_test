@@ -14,7 +14,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Image;
-use Symfony\Component\Validator\Constraints\Length;
 
 class BookType extends AbstractType
 {

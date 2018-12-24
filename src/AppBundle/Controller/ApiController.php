@@ -8,8 +8,6 @@ use AppBundle\Entity\Book;
 use AppBundle\Form\BookApiType;
 use AppBundle\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,8 +49,7 @@ class ApiController extends Controller
     /**
      * Lists all book entities.
      *
-     * @Route("/api/v1/books", name="api_books")
-     * @Method("GET")
+     * @Route("/api/v1/books", name="api_books", methods={"POST"})
      */
     public function indexAction(Request $request)
     {
@@ -71,8 +68,7 @@ class ApiController extends Controller
     /**
      * Creates a new book entity.
      *
-     * @Route("/api/v1/books/add", name="api_books_add")
-     * @Method({"POST"})
+     * @Route("/api/v1/books/add", name="api_books_add", methods={"POST"})
      */
     public function newAction(Request $request)
     {
@@ -80,11 +76,6 @@ class ApiController extends Controller
         $validateApiKey = $this->validateAuth($apikey);
         if ($validateApiKey !== true) {
             return $validateApiKey;
-        }
-        if (!$request->isMethod('POST')) {
-            return new JsonResponse([
-                'error' => 'you must use method post',
-            ], 400);
         }
         $book = new Book();
         $form = $this->createForm(BookApiType::class, $book);
@@ -104,8 +95,7 @@ class ApiController extends Controller
     /**
      * Displays a form to edit an existing book entity.
      *
-     * @Route("/api/v1/books/{id}/edit", name="api_book_edit")
-     * @Method({"POST"})
+     * @Route("/api/v1/books/{id}/edit", name="api_book_edit", methods={"POST"})
      */
     public function editAction(Request $request, Book $book)
     {
@@ -113,11 +103,6 @@ class ApiController extends Controller
         $validateApiKey = $this->validateAuth($apikey);
         if ($validateApiKey !== true) {
             return $validateApiKey;
-        }
-        if (!$request->isMethod('POST')) {
-            return new JsonResponse([
-                'error' => 'you must use method post',
-            ], 400);
         }
         $editForm = $this->createForm(BookApiType::class, $book);
         $editForm->submit($request->request->all(), false);    // $_POST
